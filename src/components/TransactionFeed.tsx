@@ -69,8 +69,8 @@ const TransactionFeed = () => {
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-text-bright">Live Transaction Feed</h2>
-            <p className="text-sm text-muted-foreground mt-1">Real-time monitoring of flagged financial flows</p>
+            <h2 className="text-2xl font-bold text-text-bright">Vice City Transaction Feed</h2>
+            <p className="text-sm text-muted-foreground mt-1">Real-time monitoring of flagged financial flows across Vice City</p>
           </div>
           <div className="flex items-center gap-2 text-sm text-primary font-mono">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />

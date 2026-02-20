@@ -35,7 +35,7 @@ const NetworkCanvas = () => {
     const draw = () => {
       ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
 
-      // Draw connections
+      // Draw connections — Vice City neon colors
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[i].x - nodes[j].x;
@@ -45,8 +45,8 @@ const NetworkCanvas = () => {
             const alpha = (1 - dist / 120) * 0.3;
             const bothSus = nodes[i].suspicious && nodes[j].suspicious;
             ctx.strokeStyle = bothSus
-              ? `hsla(42, 92%, 56%, ${alpha})`
-              : `hsla(220, 10%, 50%, ${alpha * 0.5})`;
+              ? `hsla(320, 100%, 60%, ${alpha})`
+              : `hsla(180, 80%, 50%, ${alpha * 0.5})`;
             ctx.lineWidth = bothSus ? 1.5 : 0.5;
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
@@ -66,14 +66,14 @@ const NetworkCanvas = () => {
         ctx.beginPath();
         ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2);
         ctx.fillStyle = node.suspicious
-          ? "hsla(42, 92%, 56%, 0.8)"
-          : "hsla(220, 10%, 50%, 0.4)";
+          ? "hsla(320, 100%, 60%, 0.8)"
+          : "hsla(180, 80%, 50%, 0.4)";
         ctx.fill();
 
         if (node.suspicious) {
           ctx.beginPath();
           ctx.arc(node.x, node.y, node.r + 4, 0, Math.PI * 2);
-          ctx.fillStyle = "hsla(42, 92%, 56%, 0.1)";
+          ctx.fillStyle = "hsla(320, 100%, 60%, 0.1)";
           ctx.fill();
         }
       }

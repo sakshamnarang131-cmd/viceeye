@@ -20,9 +20,9 @@ const ShellDetector = () => {
     <section className="px-6 py-12 bg-surface-glass">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-text-bright">Shell Company Detector</h2>
+          <h2 className="text-2xl font-bold text-text-bright">Vice City Shell Detector</h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Pattern-based identification of potential front companies
+            Pattern-based identification of Vice City front companies
           </p>
         </div>
 
