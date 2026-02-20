@@ -16,6 +16,8 @@ export type Database = {
     Tables: {
       dropbox_submissions: {
         Row: {
+          ai_analysis: string | null
+          ai_risk_score: number | null
           created_at: string
           description: string
           entity_name: string | null
@@ -26,6 +28,8 @@ export type Database = {
           zone: string | null
         }
         Insert: {
+          ai_analysis?: string | null
+          ai_risk_score?: number | null
           created_at?: string
           description: string
           entity_name?: string | null
@@ -36,6 +40,8 @@ export type Database = {
           zone?: string | null
         }
         Update: {
+          ai_analysis?: string | null
+          ai_risk_score?: number | null
           created_at?: string
           description?: string
           entity_name?: string | null

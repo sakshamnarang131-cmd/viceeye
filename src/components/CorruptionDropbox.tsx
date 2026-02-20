@@ -1,35 +1,117 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Send, Shield, Lock } from "lucide-react";
+import { Send, Shield, Lock, Upload, FileText, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+
+interface AnalysisResult {
+  transaction_score: number;
+  company_score: number;
+  network_score: number;
+  confidence_score: number;
+  risk_score: number;
+  classification: string;
+  summary: string;
+}
+
+const getClassColor = (c: string) => {
+  if (c === "Critical") return "text-crimson";
+  if (c === "High") return "text-primary";
+  if (c === "Moderate") return "text-primary";
+  return "text-safe";
+};
+
+const getClassBg = (c: string) => {
+  if (c === "Critical") return "bg-crimson/10 border-crimson/30";
+  if (c === "High") return "bg-primary/10 border-primary/30";
+  if (c === "Moderate") return "bg-primary/10 border-primary/30";
+  return "bg-safe/10 border-safe/30";
+};
+
+const ScoreBar = ({ label, score }: { label: string; score: number }) => {
+  const color = score >= 75 ? "bg-crimson" : score >= 50 ? "bg-primary" : score >= 25 ? "bg-primary/70" : "bg-safe";
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between text-xs">
+        <span className="text-muted-foreground">{label}</span>
+        <span className="font-mono text-text-bright">{score}</span>
+      </div>
+      <div className="h-1.5 rounded-full bg-secondary">
+        <div className={`h-full rounded-full ${color} transition-all`} style={{ width: `${score}%` }} />
+      </div>
+    </div>
+  );
+};
 
 const CorruptionDropbox = () => {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const [refId, setRefId] = useState("");
+  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!category || !description.trim()) return;
+    if (!category || !description.trim() || !file) return;
 
     setSubmitting(true);
-    const { error } = await supabase.from("dropbox_submissions").insert({
-      subject: category,
-      description: description.trim(),
-    });
 
-    if (error) {
+    // Upload file to evidence bucket
+    const filePath = `${Date.now()}-${file.name}`;
+    const { error: uploadErr } = await supabase.storage
+      .from("evidence")
+      .upload(filePath, file);
+
+    if (uploadErr) {
+      toast.error("File upload failed. Please try again.");
+      setSubmitting(false);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage.from("evidence").getPublicUrl(filePath);
+
+    // Insert submission
+    const { data: insertData, error: insertErr } = await supabase
+      .from("dropbox_submissions")
+      .insert({
+        subject: category,
+        description: description.trim(),
+        evidence_url: urlData.publicUrl,
+      })
+      .select("id")
+      .single();
+
+    if (insertErr || !insertData) {
       toast.error("Submission failed. Please try again.");
       setSubmitting(false);
       return;
     }
 
     setRefId(`DROP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`);
-    setSubmitted(true);
     setSubmitting(false);
+    setAnalyzing(true);
+    setSubmitted(true);
+
+    // Trigger AI analysis
+    try {
+      const resp = await supabase.functions.invoke("analyze-submission", {
+        body: { submission_id: insertData.id },
+      });
+
+      if (resp.error) {
+        console.error("AI analysis error:", resp.error);
+        toast.error("AI analysis failed, but your submission was saved.");
+      } else if (resp.data?.analysis) {
+        setAnalysis(resp.data.analysis);
+      }
+    } catch (err) {
+      console.error("AI analysis error:", err);
+      toast.error("AI analysis failed, but your submission was saved.");
+    }
+    setAnalyzing(false);
   };
 
   return (
@@ -50,15 +132,57 @@ const CorruptionDropbox = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-center p-8 rounded-xl bg-safe/5 border border-safe/30"
+            className="text-center p-8 rounded-xl bg-card border border-border space-y-6"
           >
-            <Shield className="w-12 h-12 text-safe mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-text-bright mb-2">Submission Received</h3>
-            <p className="text-sm text-muted-foreground">
-              Your anonymous report has been encrypted and queued for review.
-              No identifying information was collected.
-            </p>
-            <p className="font-mono text-xs text-safe mt-4">REF: {refId}</p>
+            <Shield className="w-12 h-12 text-safe mx-auto" />
+            <div>
+              <h3 className="text-lg font-semibold text-text-bright mb-2">Submission Received</h3>
+              <p className="text-sm text-muted-foreground">
+                Your anonymous report has been encrypted and queued for review.
+              </p>
+              <p className="font-mono text-xs text-safe mt-2">REF: {refId}</p>
+            </div>
+
+            {analyzing && (
+              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                AI analyzing evidence...
+              </div>
+            )}
+
+            {analysis && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4 text-left"
+              >
+                <div className="text-center">
+                  <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border ${getClassBg(analysis.classification)}`}>
+                    <span className={`font-mono text-3xl font-bold ${getClassColor(analysis.classification)}`}>
+                      {analysis.risk_score}
+                    </span>
+                    <div className="text-left">
+                      <div className={`text-sm font-semibold ${getClassColor(analysis.classification)}`}>
+                        {analysis.classification}
+                      </div>
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Risk Score</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 p-4 rounded-lg bg-secondary/50 border border-border">
+                  <ScoreBar label="Transaction Score" score={analysis.transaction_score} />
+                  <ScoreBar label="Company Score" score={analysis.company_score} />
+                  <ScoreBar label="Network Score" score={analysis.network_score} />
+                  <ScoreBar label="Confidence Score" score={analysis.confidence_score} />
+                </div>
+
+                <div className="p-4 rounded-lg bg-secondary/50 border border-border">
+                  <h4 className="text-xs uppercase tracking-wider text-muted-foreground mb-2">AI Analysis</h4>
+                  <p className="text-sm text-foreground leading-relaxed">{analysis.summary}</p>
+                </div>
+              </motion.div>
+            )}
           </motion.div>
         ) : (
           <motion.form
@@ -98,13 +222,40 @@ const CorruptionDropbox = () => {
               />
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Attach Proof <span className="text-crimson">*</span>
+              </label>
+              <label className="flex items-center justify-center gap-3 p-6 rounded-lg border-2 border-dashed border-border hover:border-primary/40 transition-colors cursor-pointer bg-secondary/50">
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
+                  onChange={(e) => setFile(e.target.files?.[0] || null)}
+                />
+                {file ? (
+                  <div className="flex items-center gap-2 text-sm text-text-bright">
+                    <FileText className="w-5 h-5 text-primary" />
+                    <span className="truncate max-w-[200px]">{file.name}</span>
+                    <span className="text-xs text-muted-foreground">({(file.size / 1024).toFixed(0)} KB)</span>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <Upload className="w-6 h-6 text-muted-foreground mx-auto mb-1" />
+                    <span className="text-sm text-muted-foreground">Click to upload evidence</span>
+                    <span className="block text-xs text-muted-foreground mt-0.5">Images, PDFs, Documents</span>
+                  </div>
+                )}
+              </label>
+            </div>
+
             <button
               type="submit"
-              disabled={!category || !description.trim() || submitting}
+              disabled={!category || !description.trim() || !file || submitting}
               className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Send className="w-4 h-4" />
-              {submitting ? "Submitting..." : "Submit Anonymously"}
+              {submitting ? "Uploading..." : "Submit Anonymously"}
             </button>
 
             <p className="text-[11px] text-muted-foreground text-center flex items-center justify-center gap-1">
