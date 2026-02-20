@@ -3,6 +3,7 @@ import TransactionFeed from "@/components/TransactionFeed";
 import ShellDetector from "@/components/ShellDetector";
 import ZoneHeatmap from "@/components/ZoneHeatmap";
 import CorruptionDropbox from "@/components/CorruptionDropbox";
+import MicroTransactionAnalyzer from "@/components/MicroTransactionAnalyzer";
 import { Eye } from "lucide-react";
 
 const Index = () => {
@@ -20,6 +21,7 @@ const Index = () => {
             <a href="#shells" className="hover:text-primary transition-colors">Shells</a>
             <a href="#zones" className="hover:text-primary transition-colors">Zones</a>
             <a href="#dropbox" className="hover:text-primary transition-colors">Dropbox</a>
+            <a href="#crisis" className="hover:text-primary transition-colors">Crisis</a>
           </div>
         </div>
       </nav>
@@ -30,6 +32,7 @@ const Index = () => {
         <div id="shells"><ShellDetector /></div>
         <div id="zones"><ZoneHeatmap /></div>
         <div id="dropbox"><CorruptionDropbox /></div>
+        <div id="crisis"><MicroTransactionAnalyzer /></div>
       </div>
 
       {/* Footer */}

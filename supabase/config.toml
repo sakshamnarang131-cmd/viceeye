@@ -1,1 +1,7 @@
 project_id = "knqtkxxpdrllntstkkke"
+
+[functions.analyze-submission]
+verify_jwt = false
+
+[functions.analyze-micro-transactions]
+verify_jwt = false
