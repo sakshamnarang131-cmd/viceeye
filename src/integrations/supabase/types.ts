@@ -53,6 +53,42 @@ export type Database = {
         }
         Relationships: []
       }
+      micro_transaction_analyses: {
+        Row: {
+          ai_summary: string | null
+          classification: string
+          cluster_risk_score: number
+          created_at: string
+          detected_patterns: Json
+          entities_involved: string[]
+          id: string
+          input_records: Json
+          raw_analysis: Json | null
+        }
+        Insert: {
+          ai_summary?: string | null
+          classification?: string
+          cluster_risk_score?: number
+          created_at?: string
+          detected_patterns?: Json
+          entities_involved?: string[]
+          id?: string
+          input_records: Json
+          raw_analysis?: Json | null
+        }
+        Update: {
+          ai_summary?: string | null
+          classification?: string
+          cluster_risk_score?: number
+          created_at?: string
+          detected_patterns?: Json
+          entities_involved?: string[]
+          id?: string
+          input_records?: Json
+          raw_analysis?: Json | null
+        }
+        Relationships: []
+      }
       shell_companies: {
         Row: {
           connections: number
