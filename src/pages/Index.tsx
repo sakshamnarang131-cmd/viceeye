@@ -13,7 +13,7 @@ const Index = () => {
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Eye className="w-5 h-5 text-primary" />
-            <span className="font-bold text-text-bright text-sm tracking-tight">SHADOW<span className="text-primary">EYE</span></span>
+            <span className="font-display font-bold text-text-bright text-sm tracking-tight">VICE<span className="text-primary">EYE</span></span>
           </div>
           <div className="hidden sm:flex items-center gap-6 text-xs font-mono text-muted-foreground uppercase tracking-wider">
             <a href="#feed" className="hover:text-primary transition-colors">Feed</a>
@@ -35,7 +35,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t border-border py-8 px-6">
         <div className="max-w-6xl mx-auto flex items-center justify-between text-xs text-muted-foreground">
-          <span className="font-mono">SHADOWEYE v1.0 — San Viceroy Intelligence</span>
+          <span className="font-display">VICEEYE v1.0 — Vice City Intelligence</span>
           <span>All data is simulated for demonstration purposes</span>
         </div>
       </footer>

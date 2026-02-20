@@ -4,7 +4,7 @@ import NetworkCanvas from "./NetworkCanvas";
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-grid">
+    <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-grid bg-vice-gradient">
       <NetworkCanvas />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background" />
 
@@ -17,18 +17,18 @@ const HeroSection = () => {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/5 mb-8">
             <Eye className="w-4 h-4 text-primary" />
-            <span className="text-sm font-mono text-primary">SHADOW ECONOMY INTELLIGENCE</span>
+            <span className="text-sm font-mono text-primary">VICE CITY INTELLIGENCE</span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-black tracking-tight text-text-bright mb-6 leading-[0.95]">
-            Follow the{" "}
-            <span className="text-primary glow-text-amber">Money</span>
+          <h1 className="font-display text-5xl md:text-7xl font-black tracking-tight text-text-bright mb-6 leading-[0.95]">
+            Welcome to{" "}
+            <span className="text-primary glow-text-pink">Vice City</span>
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Real-time detection and visualization of underground financial flows
-            across San Viceroy. Shell companies, phantom transactions, hidden
-            networks — all exposed.
+            across Vice City. Shell companies, phantom transactions, hidden
+            networks — all exposed under the neon lights.
           </p>
         </motion.div>
 
@@ -44,7 +44,7 @@ const HeroSection = () => {
             { icon: Eye, label: "Live Streams", value: "2.4K" },
           ].map((stat, i) => (
             <div key={i} className="flex items-center gap-3">
-              <stat.icon className="w-5 h-5 text-primary" />
+              <stat.icon className="w-5 h-5 text-accent" />
               <div className="text-left">
                 <div className="text-2xl font-bold font-mono text-text-bright">
                   {stat.value}

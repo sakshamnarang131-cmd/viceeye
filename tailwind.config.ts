@@ -57,10 +57,16 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        amber: {
-          DEFAULT: "hsl(var(--amber-glow))",
-          dim: "hsl(var(--amber-dim))",
+        "neon-pink": {
+          DEFAULT: "hsl(var(--neon-pink))",
+          dim: "hsl(var(--neon-pink-dim))",
         },
+        cyan: {
+          DEFAULT: "hsl(var(--cyan))",
+          dim: "hsl(var(--cyan-dim))",
+        },
+        "sunset-orange": "hsl(var(--sunset-orange))",
+        "sunset-yellow": "hsl(var(--sunset-yellow))",
         crimson: {
           DEFAULT: "hsl(var(--crimson))",
           dim: "hsl(var(--crimson-dim))",
@@ -69,6 +75,7 @@ export default {
           DEFAULT: "hsl(var(--safe))",
           dim: "hsl(var(--safe-dim))",
         },
+        "purple-deep": "hsl(var(--purple-deep))",
         "surface-elevated": "hsl(var(--surface-elevated))",
         "surface-glass": "hsl(var(--surface-glass))",
         "text-bright": "hsl(var(--text-bright))",
@@ -77,6 +84,7 @@ export default {
       fontFamily: {
         mono: ["JetBrains Mono", "monospace"],
         sans: ["Inter", "system-ui", "sans-serif"],
+        display: ["Orbitron", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",

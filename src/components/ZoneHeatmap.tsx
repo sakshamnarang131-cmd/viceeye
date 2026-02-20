@@ -19,7 +19,7 @@ const ZoneHeatmap = () => {
   const getBarColor = (threat: number) => {
     if (threat >= 80) return "bg-crimson";
     if (threat >= 50) return "bg-primary";
-    return "bg-safe";
+    return "bg-accent";
   };
 
   return (
@@ -28,7 +28,7 @@ const ZoneHeatmap = () => {
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-text-bright">Zone Threat Overview</h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Threat levels across San Viceroy's monitored zones
+            Threat levels across Vice City's monitored districts
           </p>
         </div>
 
@@ -75,7 +75,7 @@ const ZoneHeatmap = () => {
                     <div className="text-[10px] text-muted-foreground uppercase">Volume</div>
                   </div>
                   <div className="min-w-[40px]">
-                    <div className={`font-mono text-sm font-bold ${zone.threat_level >= 80 ? "text-crimson" : zone.threat_level >= 50 ? "text-primary" : "text-safe"}`}>
+                    <div className={`font-mono text-sm font-bold ${zone.threat_level >= 80 ? "text-crimson" : zone.threat_level >= 50 ? "text-primary" : "text-accent"}`}>
                       {zone.threat_level}
                     </div>
                     <div className="text-[10px] text-muted-foreground uppercase">Threat</div>
