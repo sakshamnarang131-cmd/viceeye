@@ -53,6 +53,11 @@ const CorruptionDropbox = () => {
   const [refId, setRefId] = useState("");
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
 
+  // New detail fields
+  const [transactionDetails, setTransactionDetails] = useState("");
+  const [companyIdentifiers, setCompanyIdentifiers] = useState("");
+  const [networkConnections, setNetworkConnections] = useState("");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!category || !description.trim() || !file) return;
@@ -73,12 +78,20 @@ const CorruptionDropbox = () => {
 
     const { data: urlData } = supabase.storage.from("evidence").getPublicUrl(filePath);
 
+    // Build full description including extra details
+    const fullDescription = [
+      description.trim(),
+      transactionDetails.trim() ? `\n\nTransaction Details: ${transactionDetails.trim()}` : "",
+      companyIdentifiers.trim() ? `\n\nCompany Identifiers: ${companyIdentifiers.trim()}` : "",
+      networkConnections.trim() ? `\n\nNetwork Connections: ${networkConnections.trim()}` : "",
+    ].join("");
+
     // Insert submission
     const { data: insertData, error: insertErr } = await supabase
       .from("dropbox_submissions")
       .insert({
         subject: category,
-        description: description.trim(),
+        description: fullDescription,
         evidence_url: urlData.publicUrl,
       })
       .select("id")
@@ -217,11 +230,54 @@ const CorruptionDropbox = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe the incident, people involved, locations, dates..."
-                rows={5}
+                rows={4}
                 className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50"
               />
             </div>
 
+            {/* Transaction Details */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Transaction Details <span className="text-muted-foreground font-normal">(optional)</span>
+              </label>
+              <textarea
+                value={transactionDetails}
+                onChange={(e) => setTransactionDetails(e.target.value)}
+                placeholder="E.g. money forwarded within 24h, split into small transfers, unusually large amount, returns to original entity..."
+                rows={3}
+                className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50"
+              />
+            </div>
+
+            {/* Company Identifiers */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Company Identifiers <span className="text-muted-foreground font-normal">(optional)</span>
+              </label>
+              <textarea
+                value={companyIdentifiers}
+                onChange={(e) => setCompanyIdentifiers(e.target.value)}
+                placeholder="E.g. company name, registration date, few employees, shared address with other firms, owner linked to multiple companies..."
+                rows={3}
+                className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50"
+              />
+            </div>
+
+            {/* Network Connections */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Network Connections <span className="text-muted-foreground font-normal">(optional)</span>
+              </label>
+              <textarea
+                value={networkConnections}
+                onChange={(e) => setNetworkConnections(e.target.value)}
+                placeholder="E.g. closed loop A→B→C→A, hub company with many connections, chain depth, money circulating inside a group..."
+                rows={3}
+                className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-foreground placeholder:text-muted-foreground text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50"
+              />
+            </div>
+
+            {/* File Upload */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 Attach Proof <span className="text-crimson">*</span>
